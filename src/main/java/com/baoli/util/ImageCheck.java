@@ -1,6 +1,7 @@
 package com.baoli.util;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
@@ -29,7 +30,10 @@ public class ImageCheck {
     }
 
     public boolean isImage(String fileName) {
-        String mimeType = fileTypeMap.getContentType(fileName);
+        if (StringUtils.isEmpty(fileName)) {
+            return false;
+        }
+        String mimeType = fileTypeMap.getContentType(fileName.toLowerCase());
         String type = mimeType.split("/")[0];
         return type.equals("image");
     }

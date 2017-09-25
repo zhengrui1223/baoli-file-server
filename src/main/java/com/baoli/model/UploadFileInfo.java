@@ -14,6 +14,15 @@ public class UploadFileInfo extends BaseEntity {
     private String groupName;
     private String storePath;
     private Boolean imageType;
+    private String fileSize;
+
+    public String getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(String fileSize) {
+        this.fileSize = fileSize;
+    }
 
     public Boolean getImageType() {
         return imageType;

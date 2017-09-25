@@ -8,6 +8,7 @@
         <result column="group_name" property="groupName"/>
         <result column="store_path" property="storePath"/>
         <result column="image_type" property="imageType"/>
+        <result column="file_size" property="fileSize"/>
         <result column="create_user" property="createUser"/>
         <result column="create_date" property="createDate"/>
         <result column="update_user" property="updateUser"/>
@@ -16,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, file_name, file_path, group_name, store_path, image_type, create_user, create_date, update_user, update_date, valid
+        id, file_name, file_path, file_size, group_name, store_path, image_type, create_user, create_date, update_user, update_date, valid
     </sql>
 
     <select id="getAll" resultMap="BaseResultMap"  >
@@ -35,9 +36,9 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.baoli.model.UploadFileInfo" >
         INSERT INTO
         upload_file_info
-        (file_name, file_path, group_name, store_path, image_type, create_user, create_date, update_user, update_date, valid)
+        (file_name, file_path, file_size, group_name, store_path, image_type, create_user, create_date, update_user, update_date, valid)
         VALUES
-        (#{fileName}, #{filePath}, #{groupName}, #{storePath}, #{imageType}, #{createUser}, NOW(), #{updateUser}, #{updateDate}, 1)
+        (#{fileName}, #{filePath}, #{fileSize}, #{groupName}, #{storePath}, #{imageType}, #{createUser}, NOW(), #{updateUser}, #{updateDate}, 1)
     </insert>
 
     <update id="update" useGeneratedKeys="true" keyProperty="id" parameterType="com.baoli.model.UploadFileInfo" >
