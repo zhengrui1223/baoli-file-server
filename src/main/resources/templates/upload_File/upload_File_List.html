@@ -36,7 +36,9 @@
                     <td th:text="${#dates.format(uploadFile.createDate, 'yyyy-MM-dd HH:mm:ss')}">Onions</td>
                     <td th:text="${uploadFile.createUser}">createUser</td>
                     <td><a th:href="@{/deleteFile(id=${uploadFile.id},filePath=${uploadFile.filePath})}">删除</a></td>
-                    <td><img height="80px" width="80px;" th:if="${uploadFile.imageType}" th:src="@{${uploadFile.filePath}}"/></td>
+                    <td>
+                        <img class="lazy" height="50px" width="50px" th:if="${uploadFile.imageType}" th:src="@{${uploadFile.filePath}}"/>
+                    </td>
                 </tr>
             </tbody>
         </table>
