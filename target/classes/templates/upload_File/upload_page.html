@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="content-type" content="text/html; charset=UTF-8"></meta>
+    <title>Title</title>
+</head>
+<body style="text-align: center">
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file1" value="文件1" multiple="multiple" dojoType="dojox.form.Uploader"/><br/>
+        <input type="submit" value="提交"/>
+    </form>
+</body>
+</html>

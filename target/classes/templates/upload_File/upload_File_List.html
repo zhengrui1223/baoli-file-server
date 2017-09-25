@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body class=" theme-blue">
+<div class="content" th:fragment="content">
+
+    <div class="header">
+        <h1 class="page-title">文件列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="index.html">首页</a></li>
+            <li class="active">文件列表</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+
+        <div class="btn-toolbar list-toolbar">
+            <button class="btn btn-primary"><i class="fa fa-plus"></i> New User</button>
+            <button class="btn btn-default">Import</button>
+            <button class="btn btn-default">Export</button>
+            <div class="btn-group">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="150px;" height="100px;">文件名称</th>
+                    <th width="100px;">文件下载</th>
+                    <th width="150px;">上传时间</th>
+                    <th width="100px;">上传者</th>
+                    <th width="100px;">操作</th>
+                    <th width="150px;">图片缩略图</th>
+                </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+                <tr th:each="uploadFile:${uploadFileList}">
+                    <td th:text="${uploadFile.fileName}" th:onmouseover="'showImage(\'' + ${uploadFile.filePath} + '\', \'' + ${uploadFile.imageType} + '\')'">fileName</td>
+                    <td><a th:href="@{/downloadFile(groupName=${uploadFile.groupName},storePath=${uploadFile.storePath},fileName=${uploadFile.fileName})}">点击下载</a></td>
+                    <td th:text="${#dates.format(uploadFile.createDate, 'yyyy-MM-dd HH:mm:ss')}">Onions</td>
+                    <td th:text="${uploadFile.createUser}">createUser</td>
+                    <td><a th:href="@{/deleteFile(id=${uploadFile.id},filePath=${uploadFile.filePath})}">删除</a></td>
+                    <td><img height="80px" width="80px;" th:if="${uploadFile.imageType}" th:src="@{${uploadFile.filePath}}"/></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ul class="pagination">
+            <li><a href="#">&laquo;</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">&raquo;</a></li>
+        </ul>
+
+        <div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">Delete Confirmation</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-text"><i class="fa fa-warning modal-icon"></i>Are you sure you want to delete
+                            the user?<br/>This cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="fragment/footer :: footer">footer</div>
+    </div>
+</div>
+
+</body>
+</html>

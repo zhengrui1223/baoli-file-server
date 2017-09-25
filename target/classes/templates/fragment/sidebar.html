@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="sidebar-nav" th:fragment="sidebar">
+    <ul>
+        <li>
+            <a href="#" data-target=".dashboard-menu" class="nav-header" data-toggle="collapse">
+                <i class="fa fa-fw fa-dashboard"></i> Dashboard<i class="fa fa-collapse"></i>
+            </a>
+        </li>
+        <li>
+            <ul class="dashboard-menu nav nav-list collapse in">
+                <li>
+                    <a th:href="@{/index}">
+                        <span class="fa fa-caret-right"></span> 首页
+                    </a>
+                </li>
+                <li class="active">
+                    <a th:href="@{/uploadFileList}">
+                        <span class="fa fa-caret-right"></span> 文件管理
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

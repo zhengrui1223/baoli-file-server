@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="navbar navbar-default" role="navigation" th:fragment="header">
+        <div class="navbar-header">
+            <a th:href="@{/uploadFileList}">
+                <span class="navbar-brand">
+                    <span class="fa fa-paper-plane"></span>保利文件管理系统
+                </span>
+            </a>
+        </div>
+
+        <div class="navbar-collapse collapse" style="height: 1px;">
+            <ul id="main-menu" class="nav navbar-nav navbar-right">
+                <li class="dropdown hidden-xs">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user padding-right-small"
+                              style="position:relative;top: 3px;" th:text="' ' + ${session.userName}"></span>
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <li><a tabindex="-1" th:href="@{/login}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</body>
+</html>
