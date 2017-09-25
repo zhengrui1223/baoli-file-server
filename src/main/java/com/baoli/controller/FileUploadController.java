@@ -37,8 +37,9 @@ public class FileUploadController {
     private ImageCheck imageCheck;
 
     @RequestMapping("/uploadPage")
-    public String toUploadPage() {
-        return "upload_file/upload_page";
+    public String toUploadPage(ModelMap modelMap) {
+        modelMap.addAttribute("contentPath", "upload_file/upload_page");
+        return "/layout";
     }
 
     @RequestMapping("/uploadFileList")
