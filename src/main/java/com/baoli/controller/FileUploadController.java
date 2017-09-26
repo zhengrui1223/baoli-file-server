@@ -69,9 +69,10 @@ public class FileUploadController {
                             uploadFileInfoVO.setGroupName(storePath.getGroup());
                             uploadFileInfoVO.setStorePath(storePath.getPath());
                             uploadFileInfoVO.setImageType(imageCheck.isImage(fileItem.getOriginalFilename()));
-                            uploadFileInfoVO.setFileSize(String.valueOf(getFileSizeAsMB(fileItem.getSize())).concat(" MB"));
+                            uploadFileInfoVO.setFileSize(getFileSizeAsMB(fileItem.getSize()));
                             uploadFileInfoVO.setStorePath(storePath.getPath());
                             uploadFileInfoVO.setCreateUser("Admin");
+                            uploadFileInfoVO.setFileExtension(getExtName(fileItem.getOriginalFilename(), '.'));
                             uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
                         }
                     } catch (IOException e) {
@@ -112,10 +113,10 @@ public class FileUploadController {
         return divide.doubleValue();
     }
 
-    public static void main(String[] args) {
-        BigDecimal source = new BigDecimal(123456789);
-        BigDecimal divide = source.divide(new BigDecimal(1), 5, RoundingMode.HALF_UP);
-        System.out.println(divide);
+    private String getExtName(String s, char split) {
+        int i = s.indexOf(split);
+        int leg = s.length();
+        return (i > 0 ? (i + 1) == leg ? " " : s.substring(i, s.length()) : " ");
     }
 
 }

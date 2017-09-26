@@ -1,21 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<script type="text/javascript">
-    var deleteFileId = "";
-    var deleteFilePath = "";
-    function setDeleteFile(id, filePath) {
-        deleteFileId = id;
-        deleteFilePath = filePath;
-        console.log(filePath);
-    }
-
-    function deleteFile() {
-
-        console.log(deleteFilePath);
-    }
-</script>
-
 <body class=" theme-blue">
 
 <div class="content" th:fragment="content">
@@ -49,7 +34,7 @@
             </thead>
             <tbody th:remove="all-but-first">
                 <tr th:each="uploadFile:${uploadFileList}">
-                    <td th:text="${uploadFile.fileName}" th:onmouseover="'showImage(\'' + ${uploadFile.filePath} + '\', \'' + ${uploadFile.imageType} + '\')'">fileName</td>
+                    <td th:text="${uploadFile.fileName}">fileName</td>
                     <td th:text="${uploadFile.fileSize}">fileSize</td>
                     <td><a th:href="@{/downloadFile(groupName=${uploadFile.groupName},storePath=${uploadFile.storePath},fileName=${uploadFile.fileName})}">点击下载</a></td>
                     <td th:text="${#dates.format(uploadFile.createDate, 'yyyy-MM-dd HH:mm:ss')}">Onions</td>
@@ -57,7 +42,7 @@
                     <td>
                         <img class="lazy" height="50px" width="40px" th:if="${uploadFile.imageType}" th:src="@{${uploadFile.filePath}}"/>
                     </td>
-                    <td><button class="btn btn-danger" data-toggle="modal" data-target="#myModal" th:onclick="'setDeleteFile(\'' + ${uploadFile.id} + '\', \'' + ${uploadFile.filePath} + '\')'">删除</button></td>
+                    <td><a class="btn btn-danger" data-toggle="modal" data-target="#myModal" th:onclick="'setDeleteFile(\'' + ${uploadFile.id} + '\', \'' + ${uploadFile.filePath} + '\')'">删除</a></td>
                 </tr>
             </tbody>
         </table>
@@ -83,6 +68,10 @@
                         <p class="error-text"><i class="fa fa-warning modal-icon"></i>您确定要删除该文件? 文件删除后不可恢复.</p>
                     </div>
                     <div class="modal-footer">
+                        <form method="get" id="deleteFileForm" th:action="@{/deleteFile}">
+                            <input type="hidden" id="id" name="id"/>
+                            <input type="hidden" id="filePath" name="filePath"/>
+                        </form>
                         <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
                         <button class="btn btn-danger" data-dismiss="modal" th:onclick="'deleteFile()'">删除</button>
                     </div>

@@ -14,13 +14,22 @@ public class UploadFileInfoVO extends BaseVO{
     private String groupName;
     private String storePath;
     private Boolean imageType;
-    private String fileSize;
+    private Double fileSize;
+    private String fileExtension;
 
-    public String getFileSize() {
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    public Double getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(String fileSize) {
+    public void setFileSize(Double fileSize) {
         this.fileSize = fileSize;
     }
 
