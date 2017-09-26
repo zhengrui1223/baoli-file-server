@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <meta name="content-type" content="text/html; charset=UTF-8"></meta>
+    <title>Title</title>
+</head>
+
+<body class=" theme-blue">
+<div class="content" layout:fragment="content">
+
+    <div class="header">
+        <h1 class="page-title">上传文件</h1>
+        <ul class="breadcrumb">
+            <li><a th:href="@{/uploadFileList}">文件列表</a></li>
+            <li class="active">上传文件</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <form role="form" action="javascript:void(0)" style="text-align: center;width: 40%">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input class="btn btn-default" type="file" name="file" id="singleFile"/>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" id="uploadSingleFileBtn"  value="上传" class="btn btn-default"/>
+                </div>
+            </div>
+
+            <div class="progress progress-striped active" style="display: none">
+                <div id="progressBar" class="progress-bar progress-bar-info"
+                     role="progressbar" aria-valuemin="0" aria-valuenow="0"
+                     aria-valuemax="100" style="width: 0%">
+                </div>
+            </div>
+
+        </form>
+        <div th:replace="fragment/footer :: footer">footer</div>
+    </div>
+
+    <script th:src="@{js/upload_file.js(t=${timestamp})}" type="text/javascript"/>
+
+</div>
+
+</body>
+
+</html>

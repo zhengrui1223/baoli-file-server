@@ -7,7 +7,7 @@ import com.baoli.util.FastDFSClientWrapper;
 import com.baoli.util.ImageCheck;
 import com.baoli.vo.UploadFileInfoVO;
 import com.github.tobato.fastdfs.domain.StorePath;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -28,7 +27,6 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 
 @SuppressWarnings("Duplicates")
@@ -51,40 +49,36 @@ public class FileUploadController {
     public String getUploadFileList(ModelMap modelMap) {
         List<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList();
         modelMap.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(uploadFileList));
-        return "upload_file/upload_File_List";
+        return "upload_file/upload_file_List";
     }
 
-    @RequestMapping("/uploadFiles")
-    public String uploadFiles(MultipartRequest multipartRequest) {
-        Iterator<String> fileNames = multipartRequest.getFileNames();
-        while (fileNames.hasNext()) {
-            String fileName = fileNames.next();
-            List<MultipartFile> fileList = multipartRequest.getFiles(fileName);
-            if (CollectionUtils.isNotEmpty(fileList)) {
-                for (MultipartFile fileItem : fileList) {
-                    try {
-                        if (fileItem.getSize() > 0) {
-                            StorePath storePath = dfsClient.uploadFile(fileItem);
-                            UploadFileInfoVO uploadFileInfoVO = new UploadFileInfoVO();
-                            uploadFileInfoVO.setFileName(fileItem.getOriginalFilename());
-                            uploadFileInfoVO.setFilePath(dfsClient.getResAccessUrl(storePath));
-                            uploadFileInfoVO.setGroupName(storePath.getGroup());
-                            uploadFileInfoVO.setStorePath(storePath.getPath());
-                            uploadFileInfoVO.setImageType(imageCheck.isImage(fileItem.getOriginalFilename()));
-                            uploadFileInfoVO.setFileSize(getFileSizeAsMB(fileItem.getSize()));
-                            uploadFileInfoVO.setStorePath(storePath.getPath());
-                            uploadFileInfoVO.setCreateUser("Admin");
-                            uploadFileInfoVO.setFileExtension(getExtName(fileItem.getOriginalFilename(), '.'));
-                            uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
-                        }
-                    } catch (IOException e) {
-                        logger.error(e.getMessage());
-                        continue;
+    @RequestMapping(value = "/uploadFiles", method = RequestMethod.POST)
+    public void uploadFiles(@RequestParam("files") CommonsMultipartFile[] files, HttpServletResponse response) throws IOException {
+        PrintWriter out = response.getWriter();
+        if (ArrayUtils.isNotEmpty(files)) {
+            for (MultipartFile fileItem : files) {
+                try {
+                    if (fileItem.getSize() > 0) {
+                        StorePath storePath = dfsClient.uploadFile(fileItem);
+                        UploadFileInfoVO uploadFileInfoVO = new UploadFileInfoVO();
+                        uploadFileInfoVO.setFileName(fileItem.getOriginalFilename());
+                        uploadFileInfoVO.setFilePath(dfsClient.getResAccessUrl(storePath));
+                        uploadFileInfoVO.setGroupName(storePath.getGroup());
+                        uploadFileInfoVO.setStorePath(storePath.getPath());
+                        uploadFileInfoVO.setImageType(imageCheck.isImage(fileItem.getOriginalFilename()));
+                        uploadFileInfoVO.setFileSize(getFileSizeAsMB(fileItem.getSize()));
+                        uploadFileInfoVO.setStorePath(storePath.getPath());
+                        uploadFileInfoVO.setCreateUser("Admin");
+                        uploadFileInfoVO.setFileExtension(getExtName(fileItem.getOriginalFilename(), '.'));
+                        uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
                     }
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                    continue;
                 }
             }
+            out.print("1");
         }
-        return "redirect:/uploadFileList";
     }
 
     @RequestMapping(value = "/uploadSingleFile", method = RequestMethod.POST)
@@ -93,7 +87,7 @@ public class FileUploadController {
         boolean flag = false;
         if (file != null && file.getSize() > 0) {
             try {
-                StorePath storePath =  dfsClient.uploadFile(file);
+                StorePath storePath = dfsClient.uploadFile(file);
                 UploadFileInfoVO uploadFileInfoVO = new UploadFileInfoVO();
                 uploadFileInfoVO.setFileName(file.getOriginalFilename());
                 uploadFileInfoVO.setFilePath(dfsClient.getResAccessUrl(storePath));
@@ -115,7 +109,6 @@ public class FileUploadController {
                 out.print("2");
             }
         }
-        out.print("2");
     }
 
     @RequestMapping("/deleteFile")
@@ -142,7 +135,7 @@ public class FileUploadController {
 
     private Double getFileSizeAsMB(Long fileSize) {
         BigDecimal source = new BigDecimal(fileSize);
-        BigDecimal divide = source.divide(new BigDecimal(1024*1024), 5, RoundingMode.HALF_UP);
+        BigDecimal divide = source.divide(new BigDecimal(1024 * 1024), 5, RoundingMode.HALF_UP);
         return divide.doubleValue();
     }
 
