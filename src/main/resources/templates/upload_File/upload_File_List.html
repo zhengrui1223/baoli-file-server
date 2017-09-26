@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
 
-<body class=" theme-blue">
+<body class=" theme-blue" th:with="timestamp=${#dates.format(#dates.createNow(),'yyyyMMddHH')}">
 
-<div class="content" th:fragment="content">
+<div class="content" layout:fragment="content">
 
     <div class="header">
         <h1 class="page-title">文件列表</h1>
         <ul class="breadcrumb">
-            <li><a href="index.html">首页</a></li>
+            <li><a th:href="@{/home}">首页</a></li>
             <li class="active">文件列表</li>
         </ul>
     </div>
@@ -80,8 +80,12 @@
         </div>
 
         <div th:replace="fragment/footer :: footer">footer</div>
-    </div>
-</div>
 
+    </div>
+
+    <!--必须要在content里面-->
+    <script th:src="@{js/upload_file.js(t=${timestamp})}" type="text/javascript"/>
+
+</div>
 </body>
 </html>

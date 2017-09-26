@@ -39,17 +39,15 @@ public class FileUploadController {
     private ImageCheck imageCheck;
 
     @RequestMapping("/uploadPage")
-    public String toUploadPage(ModelMap modelMap) {
-        modelMap.addAttribute("contentPath", "upload_file/upload_page");
-        return "/layout";
+    public String toUploadPage() {
+        return "upload_file/upload_page";
     }
 
     @RequestMapping("/uploadFileList")
     public String getUploadFileList(ModelMap modelMap) {
         List<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList();
         modelMap.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(uploadFileList));
-        modelMap.addAttribute("contentPath", "upload_file/upload_File_List");
-        return "/layout";
+        return "upload_file/upload_File_List";
     }
 
     @RequestMapping("/upload")
