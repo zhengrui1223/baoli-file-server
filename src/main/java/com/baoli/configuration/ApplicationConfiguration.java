@@ -1,6 +1,7 @@
 package com.baoli.configuration;
 
 import com.baoli.filter.SecurityFilter;
+import com.baoli.util.CustomMultipartResolver;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -21,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements EmbeddedServletContainerCustomizer{
     @Bean
-    public FilterRegistrationBean testFilterRegistration() {
+    public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new SecurityFilter());
         registration.addUrlPatterns("/*");
@@ -44,9 +46,13 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements
         configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST,"/e/400"));
     }
 
-    /*@Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //将所有/static*//** 访问都映射到classpath:/static/ 目录下
-        registry.addResourceHandler("/templates/fragment*//**").addResourceLocations("classpath:/templates/fragment*//**");
-    }*/
+    @Bean(name = "multipartResolver")
+    public MultipartResolver multipartResolver(){
+        CustomMultipartResolver resolver = new CustomMultipartResolver();
+        resolver.setDefaultEncoding("UTF-8");
+        resolver.setResolveLazily(true);//resolveLazily属性启用是为了推迟文件解析，以在在UploadAction中捕获文件大小异常
+        resolver.setMaxInMemorySize(40960);
+        //resolver.setMaxUploadSize(50*1024*1024);
+        return resolver;
+    }
 }

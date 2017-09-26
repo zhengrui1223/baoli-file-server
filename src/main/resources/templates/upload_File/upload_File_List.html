@@ -17,6 +17,7 @@
 
         <div class="btn-toolbar list-toolbar">
             <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-plus"></i> 上传文件</a>
+            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadSingleFileModal"><i class="fa fa-plus"></i> 上传单个文件</a>
             <div class="btn-group">
             </div>
         </div>
@@ -87,7 +88,7 @@
                         <h2 id="uploadModalLabel">文件上传(支持多选)</h2>
                     </div>
                     <div class="modal-body">
-                        <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="form-inline" style="margin-left: 10%">
+                        <form th:action="@{/uploadFiles}" method="post" enctype="multipart/form-data" class="form-inline" style="margin-left: 10%">
                             <div class="form-group">
                                 <input class="btn btn-default" type="file" id="file" name="file" multiple="multiple" dojoType="dojox.form.Uploader"/>
                             </div>
@@ -101,9 +102,118 @@
             </div>
         </div>
 
+        <div class="modal small fade" id="uploadSingleFileModal" tabindex="-1" role="dialog" aria-labelledby="uploadSingleFileModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:35%; margin-top: 15%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h2 id="uploadSingleFileModalLabel">文件上传</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" action="javascript:void(0)">
+                            <div class="form-group">
+                                <input class="btn btn-default" type="file" name="file" id="singleFile"/>
+                            </div>
+
+                            <div class="progress progress-striped active" style="display: none">
+                                <div id="progressBar" class="progress-bar progress-bar-info"
+                                     role="progressbar" aria-valuemin="0" aria-valuenow="0"
+                                     aria-valuemax="100" style="width: 0%">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" id="uploadSingleFileBtn"  value="上传" class="btn btn-default"/>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div th:replace="fragment/footer :: footer">footer</div>
 
     </div>
+
+    <script type="text/javascript">
+        $(function() {
+            //上传文件按钮
+            $("#uploadSingleFileBtn").click(function() {
+                // 进度条归零
+                $("#progressBar").width("0%");
+                // 上传按钮禁用
+                $("#uploadSingleFileBtn").attr("disabled", true);
+                // 进度条显示
+                $("#progressBar").parent().show();
+                $("#progressBar").parent().addClass("active");
+                upload("带进度条的文件上传");
+            })
+            function refreshBtn(){
+                setTimeout(function() {
+                    $("#uploadSingleFileBtn").text("上传文件");
+                    $("#uploadSingleFileBtn").removeAttr("disabled");
+                }, 1500);
+            }
+
+            function upload(name) {
+                var formData = new FormData();
+                formData.append('file', $('#singleFile')[0].files[0]);
+                function onprogress(evt) {
+                    // 写要实现的内容
+                    var progressBar = $("#progressBar");
+                    if (evt.lengthComputable) {
+                        var completePercent = Math.round(evt.loaded / evt.total * 100);
+                        progressBar.width(completePercent + "%");
+                        $("#progressBar").text(completePercent + "%");
+                    }
+                }
+                var xhr_provider = function() {
+                    var xhr = jQuery.ajaxSettings.xhr();
+                    if (onprogress) {
+                        if (xhr.upload) {
+                            xhr.upload.addEventListener('progress', onprogress, false);
+                        }
+                    }
+                    return xhr;
+                };
+                $.ajax({
+                    url : "http://localhost:8080/uploadSingleFile",
+                    type : 'POST',
+                    cache : false,
+                    data : formData,
+                    processData : false,
+                    contentType : false,
+                    xhr : xhr_provider,
+                    success : function(data) {
+                        console.info(data);
+                        var result = $.parseJSON(data);
+                        if (result.code == "0") {
+                            $("#uploadSingleFileBtn").text("上传成功");
+                            //$("#imageUpload").attr("src", ctx + result.data);
+                            setTimeout(function() {
+                                $("#uploadSingleFileBtn").text("上传文件");
+                            }, 1000);
+                        } else if(result.code=="-4"){
+                            $("#uploadSingleFileBtn").text("不支持的文件类型");
+                            //ShowFailure("操作失败：" + result.data);
+                        } else {
+                            $("#uploadSingleFileBtn").text(result.data);
+                            //ShowFailure("操作失败：" + result.data);
+                        }
+                        // 进度条隐藏
+                        $("#progressBar").parent().hide();
+                        refreshBtn();
+                    },
+                    error : function(data) {
+                        console.info(data);
+                        //ShowFailure("操作失败：" + data);
+                        refreshBtn();
+                    }
+                })
+            }
+        })
+    </script>
 
     <!--必须要在content里面-->
     <script th:src="@{js/upload_file.js(t=${timestamp})}" type="text/javascript"/>
