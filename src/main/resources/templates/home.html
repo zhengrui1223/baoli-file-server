@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
-<head th:include="layout :: htmlhead" th:with="title='Hello'"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
 
 <body>
-    <div class="content" th:fragment="content">
+    <div class="content" layout:fragment="content">
         <div class="header">
 
-            <h1 class="page-title">Home</h1>
+            <h1 class="page-title">首页</h1>
             <ul class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
+                <li><a th:href="@{/home}">首页</a></li>
             </ul>
 
         </div>

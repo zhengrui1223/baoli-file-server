@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
-    <div th:fragment="400">
-        <h1>找不到资源!</h1>
-        <h1>找不到资源!</h1>
-        <h1>找不到资源!</h1>
-        <h1>找不到资源!</h1>
-        <h1>找不到资源!</h1>
+<div class="content" th:fragment="content">
+    <div class="header">
+
+        <h1 class="page-title">Home</h1>
+        <ul class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+        </ul>
 
     </div>
+    <div class="main-content">
+        <div style="height: 400px">
+            <h1>资源不存在</h1>
+        </div>
+        <div th:replace="fragment/footer :: footer">footer</div>
+    </div>
+</div>
 </body>
 </html>

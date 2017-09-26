@@ -31,13 +31,12 @@ public class LoginController {
                           @RequestParam(required = false) boolean remember, HttpServletRequest request, HttpServletResponse response) {
         CookieUtil.setCookie(response, Context.USER_INFO, "BAO.LI.USER.INFO", 0);
         request.getSession().setAttribute("userName", userName);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
-    @RequestMapping("/index")
-    public String index(ModelMap modelMap) {
-        modelMap.addAttribute("contentPath", "home");
-        return "/layout";
+    @RequestMapping("/home")
+    public String index() {
+        return "/home";
     }
 
 }

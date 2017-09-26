@@ -58,7 +58,7 @@ public class FastDFSClientWrapper {
         return storePath;
     }
 
-    // 封装图片完整URL地址
+    // 封装http访问到的图片完整URL地址
     public String getResAccessUrl(StorePath storePath) {
         return config.getFastDfsNginxHosProtocol().
                 concat("://").

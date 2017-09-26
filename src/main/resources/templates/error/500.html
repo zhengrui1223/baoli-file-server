@@ -1,8 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
-    <div th:fragment="500">
-        <h1>服务器异常,请联系系统管理员!</h1>
+<div class="content" th:fragment="content">
+    <div class="header">
+
+        <h1 class="page-title">Home</h1>
+        <ul class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+        </ul>
+
     </div>
+    <div class="main-content">
+        <div style="height: 400px">
+            <h1>服务器异常,请联系系统管理员</h1>
+        </div>
+        <div th:replace="fragment/footer :: footer">footer</div>
+    </div>
+</div>
 </body>
 </html>

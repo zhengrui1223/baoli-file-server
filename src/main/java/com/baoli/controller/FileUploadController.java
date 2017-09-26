@@ -14,20 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 @Controller
 public class FileUploadController {
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
@@ -39,21 +43,19 @@ public class FileUploadController {
     private ImageCheck imageCheck;
 
     @RequestMapping("/uploadPage")
-    public String toUploadPage(ModelMap modelMap) {
-        modelMap.addAttribute("contentPath", "upload_file/upload_page");
-        return "/layout";
+    public String toUploadPage() {
+        return "upload_file/upload_page";
     }
 
     @RequestMapping("/uploadFileList")
     public String getUploadFileList(ModelMap modelMap) {
         List<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList();
         modelMap.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(uploadFileList));
-        modelMap.addAttribute("contentPath", "upload_file/upload_File_List");
-        return "/layout";
+        return "upload_file/upload_File_List";
     }
 
-    @RequestMapping("/upload")
-    public String upload(MultipartRequest multipartRequest) {
+    @RequestMapping("/uploadFiles")
+    public String uploadFiles(MultipartRequest multipartRequest) {
         Iterator<String> fileNames = multipartRequest.getFileNames();
         while (fileNames.hasNext()) {
             String fileName = fileNames.next();
@@ -69,9 +71,10 @@ public class FileUploadController {
                             uploadFileInfoVO.setGroupName(storePath.getGroup());
                             uploadFileInfoVO.setStorePath(storePath.getPath());
                             uploadFileInfoVO.setImageType(imageCheck.isImage(fileItem.getOriginalFilename()));
-                            uploadFileInfoVO.setFileSize(String.valueOf(getFileSizeAsMB(fileItem.getSize())).concat(" MB"));
+                            uploadFileInfoVO.setFileSize(getFileSizeAsMB(fileItem.getSize()));
                             uploadFileInfoVO.setStorePath(storePath.getPath());
                             uploadFileInfoVO.setCreateUser("Admin");
+                            uploadFileInfoVO.setFileExtension(getExtName(fileItem.getOriginalFilename(), '.'));
                             uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
                         }
                     } catch (IOException e) {
@@ -82,6 +85,37 @@ public class FileUploadController {
             }
         }
         return "redirect:/uploadFileList";
+    }
+
+    @RequestMapping(value = "/uploadSingleFile", method = RequestMethod.POST)
+    public void uploadSingleFile(@RequestParam("file") CommonsMultipartFile file, HttpServletResponse response) throws IOException {
+        PrintWriter out = response.getWriter();
+        boolean flag = false;
+        if (file != null && file.getSize() > 0) {
+            try {
+                StorePath storePath =  dfsClient.uploadFile(file);
+                UploadFileInfoVO uploadFileInfoVO = new UploadFileInfoVO();
+                uploadFileInfoVO.setFileName(file.getOriginalFilename());
+                uploadFileInfoVO.setFilePath(dfsClient.getResAccessUrl(storePath));
+                uploadFileInfoVO.setGroupName(storePath.getGroup());
+                uploadFileInfoVO.setStorePath(storePath.getPath());
+                uploadFileInfoVO.setImageType(imageCheck.isImage(file.getOriginalFilename()));
+                uploadFileInfoVO.setFileSize(getFileSizeAsMB(file.getSize()));
+                uploadFileInfoVO.setStorePath(storePath.getPath());
+                uploadFileInfoVO.setCreateUser("Admin");
+                uploadFileInfoVO.setFileExtension(getExtName(file.getOriginalFilename(), '.'));
+                uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
+                flag = true;
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            if (flag) {
+                out.print("1");
+            } else {
+                out.print("2");
+            }
+        }
+        out.print("2");
     }
 
     @RequestMapping("/deleteFile")
@@ -112,10 +146,10 @@ public class FileUploadController {
         return divide.doubleValue();
     }
 
-    public static void main(String[] args) {
-        BigDecimal source = new BigDecimal(123456789);
-        BigDecimal divide = source.divide(new BigDecimal(1), 5, RoundingMode.HALF_UP);
-        System.out.println(divide);
+    private String getExtName(String s, char split) {
+        int i = s.indexOf(split);
+        int leg = s.length();
+        return (i > 0 ? (i + 1) == leg ? " " : s.substring(i, s.length()) : " ");
     }
 
 }
