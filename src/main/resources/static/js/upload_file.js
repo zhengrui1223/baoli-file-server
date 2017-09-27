@@ -29,11 +29,6 @@ $("#uploadFilesBtn").click(function () {
 })
 
 function refreshBtn() {
-    /*setTimeout(function () {
-     $("#files").val("");
-     $("#uploadFilesBtn").text("上传文件");
-     $("#uploadFilesBtn").removeAttr("disabled");
-     }, 1000);*/
     $("#files").val("");
     $("#uploadFilesBtn").attr("disabled", "disabled");
 }
