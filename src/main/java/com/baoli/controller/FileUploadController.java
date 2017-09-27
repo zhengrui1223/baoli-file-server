@@ -7,6 +7,7 @@ import com.baoli.util.FastDFSClientWrapper;
 import com.baoli.util.ImageCheck;
 import com.baoli.vo.UploadFileInfoVO;
 import com.github.tobato.fastdfs.domain.StorePath;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -23,11 +25,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("Duplicates")
 @Controller
@@ -52,9 +56,12 @@ public class FileUploadController {
         return "upload_file/upload_file_List";
     }
 
+    @ResponseBody
     @RequestMapping(value = "/uploadFiles", method = RequestMethod.POST)
-    public void uploadFiles(@RequestParam("files") CommonsMultipartFile[] files, HttpServletResponse response) throws IOException {
-        PrintWriter out = response.getWriter();
+    public Map<String, List<String>> uploadFiles(@RequestParam("files") CommonsMultipartFile[] files) {
+        Map<String, List<String>> resultMap = new HashMap<>();
+        List<String> successList = new ArrayList<>();
+        List<String> failList = new ArrayList<>();
         if (ArrayUtils.isNotEmpty(files)) {
             for (MultipartFile fileItem : files) {
                 try {
@@ -71,44 +78,22 @@ public class FileUploadController {
                         uploadFileInfoVO.setCreateUser("Admin");
                         uploadFileInfoVO.setFileExtension(getExtName(fileItem.getOriginalFilename(), '.'));
                         uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
+                        successList.add(fileItem.getOriginalFilename());
                     }
                 } catch (IOException e) {
-                    logger.error(e.getMessage());
+                    failList.add(fileItem.getOriginalFilename());
+                    logger.error(fileItem.getOriginalFilename() + " upload failed, cause by: " + e.getMessage());
                     continue;
                 }
             }
-            out.print("1");
         }
-    }
-
-    @RequestMapping(value = "/uploadSingleFile", method = RequestMethod.POST)
-    public void uploadSingleFile(@RequestParam("file") CommonsMultipartFile file, HttpServletResponse response) throws IOException {
-        PrintWriter out = response.getWriter();
-        boolean flag = false;
-        if (file != null && file.getSize() > 0) {
-            try {
-                StorePath storePath = dfsClient.uploadFile(file);
-                UploadFileInfoVO uploadFileInfoVO = new UploadFileInfoVO();
-                uploadFileInfoVO.setFileName(file.getOriginalFilename());
-                uploadFileInfoVO.setFilePath(dfsClient.getResAccessUrl(storePath));
-                uploadFileInfoVO.setGroupName(storePath.getGroup());
-                uploadFileInfoVO.setStorePath(storePath.getPath());
-                uploadFileInfoVO.setImageType(imageCheck.isImage(file.getOriginalFilename()));
-                uploadFileInfoVO.setFileSize(getFileSizeAsMB(file.getSize()));
-                uploadFileInfoVO.setStorePath(storePath.getPath());
-                uploadFileInfoVO.setCreateUser("Admin");
-                uploadFileInfoVO.setFileExtension(getExtName(file.getOriginalFilename(), '.'));
-                uploadFileInfoService.insert(BaoLiBeanUtil.convertUploadFileInfoVO2UploadFileInfo(uploadFileInfoVO));
-                flag = true;
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
-            if (flag) {
-                out.print("1");
-            } else {
-                out.print("2");
-            }
+        if (CollectionUtils.isNotEmpty(successList)) {
+            resultMap.put("successList", successList);
         }
+        if (CollectionUtils.isNotEmpty(failList)) {
+            resultMap.put("failList", failList);
+        }
+        return resultMap;
     }
 
     @RequestMapping("/deleteFile")

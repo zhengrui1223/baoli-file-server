@@ -42,7 +42,7 @@
                     <td>
                         <img class="lazy" height="50px" width="40px" th:if="${uploadFile.imageType}" th:src="@{${uploadFile.filePath}}"/>
                     </td>
-                    <td><a class="btn btn-danger" data-toggle="modal" data-target="#myModal" th:onclick="'setDeleteFile(\'' + ${uploadFile.id} + '\', \'' + ${uploadFile.filePath} + '\')'">删除</a></td>
+                    <td><a class="btn btn-danger" data-toggle="modal" data-target="#deleteFileModal" th:onclick="'setDeleteFile(\'' + ${uploadFile.id} + '\', \'' + ${uploadFile.filePath} + '\')'">删除</a></td>
                 </tr>
             </tbody>
         </table>
@@ -57,12 +57,12 @@
             <li><a href="#">&raquo;</a></li>
         </ul>
 
-        <div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal small fade" id="deleteFileModal" tabindex="-1" role="dialog" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
             <div class="modal-dialog" style="width:35%; margin-top: 15%">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h2 id="myModalLabel">删除确认</h2>
+                        <h2 id="deleteFileModalLabel">删除确认</h2>
                     </div>
                     <div class="modal-body">
                         <p class="error-text"><i class="fa fa-warning modal-icon"></i>您确定要删除该文件? 文件删除后不可恢复.</p>
@@ -79,24 +79,27 @@
             </div>
         </div>
 
-        <div class="modal small fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal small fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true"  data-backdrop="static">
             <div class="modal-dialog" style="width:35%; margin-top: 15%">
-                <div class="modal-content" style="height: 180px">
+                <div class="modal-content" style="height: auto">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <a type="button" class="close" data-dismiss="modal" aria-hidden="true" id="reloadFileList">×</a>
                         <h2 id="uploadModalLabel">文件上传(支持多选)</h2>
                     </div>
                     <div class="modal-body">
-                        <form role="form" action="javascript:void(0)" style="margin-left: auto">
-                            <div class="form-inline" style="margin-bottom: 10px">
+                        <form role="form" action="javascript:void(0)" style="margin-left: auto" id="uploadFileForm">
+                            <div class="form-inline" style="margin-bottom: 10px; margin-left: 20%">
                                 <div class="form-group">
                                     <input class="btn btn-default" type="file" name="files" id="files" multiple="multiple" dojoType="dojox.form.Uploader"/>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="submit" id="uploadFilesBtn"  value="上传" class="btn btn-default"/>
+                                    <input type="submit" id="uploadFilesBtn"  value="上传" class="btn btn-default" disabled="disabled"/>
                                 </div>
                             </div>
+
+                            <div class="form-group" id="successList" style="display: none;"/>
+                            <div class="form-group" id="failList" style="display: none;color: red"/>
 
                             <div class="progress progress-striped active" style="display: none">
                                 <div id="progressBar" class="progress-bar progress-bar-info"
