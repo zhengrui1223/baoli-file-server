@@ -15,12 +15,32 @@
 
     <div class="main-content">
 
-        <div class="btn-toolbar list-toolbar">
-            <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-plus"></i> 上传文件</a>
+        <form method="get" th:action="@{/uploadFileList}" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">文件名称: </label>
+                <div class="col-md-6">
+                    <input class="btn btn-default" type="text" name="fileName" placeholder="请输入文件名称"/>
+                </div>
+
+                <label class="col-sm-2 control-label">创建人: </label>
+                <div class="col-md-6">
+                    <input class="btn btn-default" type="text" name="createUser" placeholder="请输入文件创建人名称"/>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+            </div>
+        </form>
+
+        <div class="btn-toolbar list-toolbar" style="float: right; margin-right: 10%">
+            <button class="btn btn-default">搜索</button>
+            <button class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-plus"></i> 上传文件</button>
             <div class="btn-group">
             </div>
         </div>
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>文件名称</th>
