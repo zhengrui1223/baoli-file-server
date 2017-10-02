@@ -31,8 +31,14 @@ import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.util.*;
 
+/************************************************************
+ * @author jerry.zheng
+ * @Description
+ * @date 2017-09-25 10:09
+ ************************************************************/
+
 @Controller
-public class FileUploadController {
+public class FileUploadController extends BaseController<UploadFileInfo>{
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
     @Autowired
     private FastDFSClientWrapper dfsClient;
@@ -53,20 +59,9 @@ public class FileUploadController {
                                     @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
         PageInfo<UploadFileInfo> pageInfo = uploadFileInfoService.getUploadFileList(fileName, createUser, fileSizeStart, fileSizeEnd, pageNum, pageSize);
         model.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(pageInfo.getList()));
-        //获得当前页
-        model.addAttribute("pageNum", pageInfo.getPageNum());
-        //获得一页显示的条数
-        model.addAttribute("pageSize", pageInfo.getPageSize());
-        //是否是第一页
-        model.addAttribute("isFirstPage", pageInfo.isIsFirstPage());
-        //获得总页数
-        model.addAttribute("totalPages", pageInfo.getPages());
-        //是否是最后一页
-        model.addAttribute("isLastPage", pageInfo.isIsLastPage());
-        //获得总条数
-        model.addAttribute("totalElements", pageInfo.getTotal());
+        setPageInfo2Model(model, pageInfo);
 
-        //回显搜索项
+        //回显表单自定义搜索项
         model.addAttribute("fileName", fileName);
         model.addAttribute("createUser", createUser);
         model.addAttribute("fileSizeStart", fileSizeStart);
@@ -74,6 +69,7 @@ public class FileUploadController {
 
         return "upload_file/upload_file_List";
     }
+
 
     @ResponseBody
     @RequestMapping(value = "/uploadFiles", method = RequestMethod.POST)
@@ -115,22 +111,39 @@ public class FileUploadController {
         return resultMap;
     }
 
+    @ResponseBody
     @RequestMapping("/deleteFile")
-    public String deleteFile(@RequestParam Integer id, @RequestParam String filePath) {
-        dfsClient.deleteFile(filePath);
-        uploadFileInfoService.deleteFile(id);
-        return "redirect:/uploadFileList";
+    public Map<String, String> deleteFile(@RequestParam Integer id, @RequestParam String filePath) {
+        Map<String, String> resultMap = new HashMap<>();
+        try{
+            dfsClient.deleteFile(filePath);
+            uploadFileInfoService.deleteFile(id);
+            resultMap.put("result", "success");
+        }catch (Exception e) {
+            logger.error(e.getMessage());
+            resultMap.put("result", "error");
+        }
+        return resultMap;
     }
 
+    @ResponseBody
     @RequestMapping("/deleteFiles")
-    public String deleteFiles(@RequestParam Integer[] ids, @RequestParam String[] filePaths) {
-        if (ArrayUtils.isNotEmpty(ids) && ArrayUtils.isNotEmpty(filePaths)) {
-            for (int i=0; i< ids.length; i++) {
-                dfsClient.deleteFile(filePaths[i]);
-                uploadFileInfoService.deleteFile(ids[i]);
+    public Map<String, String> deleteFiles(@RequestParam Integer[] ids, @RequestParam String[] filePaths) {
+        Map<String, String> resultMap = new HashMap<>();
+        try{
+            if (ArrayUtils.isNotEmpty(ids) && ArrayUtils.isNotEmpty(filePaths)) {
+                for (int i=0; i< ids.length; i++) {
+                    dfsClient.deleteFile(filePaths[i]);
+                    uploadFileInfoService.deleteFile(ids[i]);
+                }
+                resultMap.put("result", "success");
             }
+            resultMap.put("result", "empty");
+        }catch (Exception e) {
+            logger.error(e.getMessage());
+            resultMap.put("result", "error");
         }
-        return "redirect:/uploadFileList";
+        return resultMap;
     }
 
     @RequestMapping("/downloadFile")

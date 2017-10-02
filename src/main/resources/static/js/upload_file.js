@@ -114,7 +114,18 @@ function batchDelete() {
         filePaths.push(filePath);
     });
     if (ids.length > 0) {
-        window.location.href = window.location.protocol + "//" + window.location.host + "/deleteFiles?ids=" + ids + "&filePaths=" + filePaths;
+        var url = window.location.protocol + "//" + window.location.host + "/deleteFiles?ids=" + ids + "&filePaths=" + filePaths;
+        $.ajax({
+            url: url,
+            dataType : "json",
+            type: 'GET',
+            success: function (data) {
+                window.parent.location.reload(true);
+            },
+            error: function (data) {
+                //window.parent.location.reload(true);
+            }
+        })
     }
 }
 
@@ -124,5 +135,18 @@ function setDeleteFile(id, filePath) {
 }
 
 function deleteFile() {
-    $("#deleteFileForm").submit();
+    var id = $("#id").val();
+    var filePath = $("#filePath").val();
+    var url = window.location.protocol + "//" + window.location.host + "/deleteFile?id=" + id + "&filePath=" + filePath;
+    $.ajax({
+        url: url,
+        dataType : "json",
+        type: 'GET',
+        success: function (data) {
+            window.parent.location.reload(true);
+        },
+        error: function (data) {
+            //window.parent.location.reload(true);
+        }
+    })
 }

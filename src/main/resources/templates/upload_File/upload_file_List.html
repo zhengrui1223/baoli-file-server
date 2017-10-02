@@ -125,12 +125,11 @@
                         <p class="error-text"><i class="fa fa-warning modal-icon"></i>您确定要删除该文件? 文件删除后不可恢复.</p>
                     </div>
                     <div class="modal-footer">
-                        <form method="get" id="deleteFileForm" th:action="@{/deleteFile}">
-                            <input type="hidden" id="id" name="id"/>
-                            <input type="hidden" id="filePath" name="filePath"/>
-                        </form>
+                        <input type="hidden" id="id" name="id"/>
+                        <input type="hidden" id="filePath" name="filePath"/>
+
                         <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
-                        <button class="btn btn-danger" data-dismiss="modal" th:onclick="'deleteFile()'">删除</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteFile()">删除</button>
                     </div>
                 </div>
             </div>
