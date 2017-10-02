@@ -1,8 +1,7 @@
 package com.baoli.service;
 
 import com.baoli.model.UploadFileInfo;
-
-import java.util.List;
+import com.github.pagehelper.PageInfo;
 
 /**
  * Created by MOVITECH-5-e450 on 2017/9/22.
@@ -10,7 +9,7 @@ import java.util.List;
 public interface IUploadFileInfoService {
     UploadFileInfo insert(UploadFileInfo uploadFileInfo);
 
-    List<UploadFileInfo> getUploadFileList();
+    PageInfo<UploadFileInfo> getUploadFileList(String fileName, String createUser, Double fileSizeStart, Double fileSizeEnd, Integer pageNum, Integer pageSize);
 
     void deleteFile(Integer id);
 }

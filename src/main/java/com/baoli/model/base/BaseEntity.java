@@ -8,9 +8,11 @@ import java.util.Date;
  * @Description
  * @date 2017-09-22 9:21
  ************************************************************/
+
 public class BaseEntity implements Serializable {
 
     private Integer id;
+
     private Date createDate;
     private String createUser;
     private Date updateDate;

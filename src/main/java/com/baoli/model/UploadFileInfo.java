@@ -7,6 +7,7 @@ import com.baoli.model.base.BaseEntity;
  * @Description
  * @date 2017-09-22 8:38
  ************************************************************/
+
 public class UploadFileInfo extends BaseEntity {
 
     private String fileName;

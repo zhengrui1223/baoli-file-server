@@ -5,6 +5,7 @@ import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +39,7 @@ public class UploadServiceTest {
 
     @Test
     public void testGetAll() throws JsonProcessingException {
-        List<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList();
+        PageInfo<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList(null, null, null, null, 1, 5);
         System.out.println(new ObjectMapper().writeValueAsString(uploadFileList));
     }
 

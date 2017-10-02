@@ -1,13 +1,4 @@
 
-function setDeleteFile(id, filePath) {
-    $("#id").val(id);
-    $("#filePath").val(filePath);
-}
-
-function deleteFile() {
-    $("#deleteFileForm").submit();
-}
-
 //上传文件按钮
 $("#uploadFilesBtn").click(function () {
 
@@ -112,3 +103,26 @@ $("#reloadFileList").click(function () {
     }
     sessionStorage.setItem("isUpload", false);
 })
+
+function batchDelete() {
+    var ids = new Array();
+    var filePaths = new Array();
+    $("input[name='choseElement']:checked").each(function (index, item) {
+        var id = item.value.split(",")[0];
+        var filePath =  item.value.split(",")[1];
+        ids.push(id);
+        filePaths.push(filePath);
+    });
+    if (ids.length > 0) {
+        window.location.href = window.location.protocol + "//" + window.location.host + "/deleteFiles?ids=" + ids + "&filePaths=" + filePaths;
+    }
+}
+
+function setDeleteFile(id, filePath) {
+    $("#id").val(id);
+    $("#filePath").val(filePath);
+}
+
+function deleteFile() {
+    $("#deleteFileForm").submit();
+}

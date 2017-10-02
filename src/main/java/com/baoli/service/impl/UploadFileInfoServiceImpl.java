@@ -3,10 +3,14 @@ package com.baoli.service.impl;
 import com.baoli.mapper.UploadFileInfoMapper;
 import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /************************************************************
  * @author jerry.zheng
@@ -27,8 +31,17 @@ public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
     }
 
     @Override
-    public List<UploadFileInfo> getUploadFileList() {
-        return mapper.getAll();
+    public PageInfo<UploadFileInfo> getUploadFileList(String fileName, String createUser, Double fileSizeStart, Double fileSizeEnd, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+
+        Map<String, Object> params = new HashedMap();
+        params.put("fileName", fileName);
+        params.put("createUser", createUser);
+        params.put("fileSizeStart", fileSizeStart);
+        params.put("fileSizeEnd", fileSizeEnd);
+        List<UploadFileInfo> fileInfoLists = mapper.getUploadFileList(params);
+
+        return new PageInfo<>(fileInfoLists);
     }
 
     @Override

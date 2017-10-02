@@ -13,36 +13,48 @@
         </ul>
     </div>
 
+
     <div class="main-content">
+        <form method="get" th:action="@{/uploadFileList}" id="searchForm">
+            <input type="hidden" name="pageNum" id="pageNum" th:value="${pageNum}"/>
+            <input type="hidden" name="pageSize" id="pageSize" th:value="${pageSize}"/>
+            <div class="row form-horizontal">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">文件名称: </label>
+                    <div class="col-md-2">
+                        <input class="input-xlarge form-control" type="text" name="fileName" placeholder="请输入文件名称" th:value="${fileName}"/>
+                    </div>
 
-        <form method="get" th:action="@{/uploadFileList}" class="form-horizontal">
-            <div class="form-group">
-                <label class="col-sm-3 control-label">文件名称: </label>
-                <div class="col-md-6">
-                    <input class="btn btn-default" type="text" name="fileName" placeholder="请输入文件名称"/>
+                    <label class="col-md-1 control-label">创建人: </label>
+                    <div class="col-md-2">
+                        <input class="input-xlarge form-control" type="text" name="createUser" placeholder="请输入文件创建人名称" th:value="${createUser}"/>
+                    </div>
                 </div>
 
-                <label class="col-sm-2 control-label">创建人: </label>
-                <div class="col-md-6">
-                    <input class="btn btn-default" type="text" name="createUser" placeholder="请输入文件创建人名称"/>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">文件大小: </label>
+                    <div class="col-md-2">
+                        <input class="input-xlarge form-control" type="number" name="fileSizeStart" placeholder="请输入文件大小范围" th:value="${fileSizeStart}"/>
+                    </div>
+
+                    <label class="col-md-1 control-label">至: </label>
+                    <div class="col-md-2">
+                        <input class="input-xlarge form-control" type="number" name="fileSizeEnd" placeholder="请输入文件大小范围" th:value="${fileSizeEnd}"/>
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="form-group">
-
+                <div class="btn-toolbar list-toolbar" style="float: right; margin-right: 40%">
+                    <button type="submit" class="btn btn-default" placeholder="查询">搜索</button>
+                    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-plus"></i> 上传文件</a>
+                    <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteBatchFileModal">批量删除</a>
+                </div>
             </div>
         </form>
 
-        <div class="btn-toolbar list-toolbar" style="float: right; margin-right: 10%">
-            <button class="btn btn-default">搜索</button>
-            <button class="btn btn-primary" href="#" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-plus"></i> 上传文件</button>
-            <div class="btn-group">
-            </div>
-        </div>
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th width="3%"><input type="checkbox" id="checkAll" onclick="checkAll()"/></th>
                     <th>文件名称</th>
                     <th>文件大小(MB)</th>
                     <th>文件下载</th>
@@ -54,6 +66,9 @@
             </thead>
             <tbody th:remove="all-but-first">
                 <tr th:each="uploadFile:${uploadFileList}">
+                    <td>
+                        <input type="checkbox" name="choseElement" th:value="${uploadFile.id} + ',' + ${uploadFile.filePath}" onclick="clickElement(this)"/>
+                    </td>
                     <td th:text="${uploadFile.fileName}">fileName</td>
                     <td th:text="${uploadFile.fileSize}">fileSize</td>
                     <td><a th:href="@{/downloadFile(groupName=${uploadFile.groupName},storePath=${uploadFile.storePath},fileName=${uploadFile.fileName})}">点击下载</a></td>
@@ -67,15 +82,37 @@
             </tbody>
         </table>
 
-        <ul class="pagination">
-            <li><a href="#">&laquo;</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">&raquo;</a></li>
-        </ul>
+        <nav th:if="${totalPages gt 0}" style="text-align: center">
+            <ul class="pagination">
+                <li><a th:onclick="'changePage(\'' + ${pageNum-1} + '\', \'' + ${pageSize} +'\')'" th:if="${not isFirstPage}">&laquo;</a></li>
+                <li><a th:if="${not isFirstPage}" th:onclick="'changePage(\'' + 1 + '\', \'' + ${pageSize} +'\')'">首页</a></li>
+
+                <!--<li th:each="pageNo : ${#numbers.sequence(1, totalPages)}" th:class="${pageNum eq pageNo}? 'active'">
+                    <a th:if="${pageNum eq pageNo}" href="javascript:void(0);" >
+                        <span th:text="${pageNo}"></span>
+                    </a>
+                    <a th:if="${not (pageNum eq pageNo)}" th:onclick="'changePage(\'' + ${pageNo} + '\', \'' + ${pageSize} +'\')'">
+                        <span th:text="${pageNo}"></span>
+                    </a>
+                </li>-->
+
+                <li th:if="${pageNum-4 gt 0 and pageNum+1 gt totalPages}"><a href="#" th:onclick="'changePage(\'' + ${pageNum-4} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum-4}"></a></li>
+                <li th:if="${pageNum-3 gt 0 and pageNum+2 gt totalPages}"><a href="#" th:onclick="'changePage(\'' + ${pageNum-3} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum-3}"></a></li>
+                <li th:if="${pageNum-2 gt 0}"><a href="#" th:onclick="'changePage(\'' + ${pageNum-2} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum-2}"></a></li>
+                <li th:if="${pageNum-1 gt 0}"><a href="#" th:onclick="'changePage(\'' + ${pageNum-1} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum-1}"></a></li>
+                <li th:if="${pageNum}" class="active"><a href="#" th:onclick="'changePage(\'' + ${pageNum} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum}"></a></li>
+                <li th:if="${pageNum+1 le totalPages}"><a href="#" th:onclick="'changePage(\'' + ${pageNum+1} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum+1}"></a></li>
+                <li th:if="${pageNum+2 le totalPages}"><a href="#" th:onclick="'changePage(\'' + ${pageNum+2} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum+2}"></a></li>
+                <li th:if="${pageNum+3 le totalPages and pageNum-1 le 0}"><a href="#" th:onclick="'changePage(\'' + ${pageNum+3} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum+3}"></a></li>
+                <li th:if="${pageNum+4 le totalPages and pageNum-2 le 0}"><a href="#" th:onclick="'changePage(\'' + ${pageNum+4} + '\', \'' + ${pageSize} +'\')'" th:text="${pageNum+4}"></a></li>
+
+                <li><a th:if="${not isLastPage}" th:onclick="'changePage(\'' + ${totalPages} + '\', \'' + ${pageSize} +'\')'">尾页</a></li>
+                <li><a th:onclick="'changePage(\'' + ${pageNum+1} + '\', \'' + ${pageSize} +'\')'" th:if="${not isLastPage}">&raquo;</a></li>
+                <li><span th:utext="'共'+${totalPages}+'页 / '+${totalElements}+' 条'"></span></li>
+                <li style="float: left"><input type="text" class="form-control" name="test" style="width: 82px" placeholder="每页总数"  onblur="changePageSize(this.value)"/></li>
+                <li style="float: left"><input type="text" class="form-control" style="width: 75px" placeholder="跳转到" onblur="changePageNum(this.value)"/></li>
+            </ul>
+        </nav>
 
         <div class="modal small fade" id="deleteFileModal" tabindex="-1" role="dialog" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
             <div class="modal-dialog" style="width:35%; margin-top: 15%">
@@ -94,6 +131,24 @@
                         </form>
                         <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
                         <button class="btn btn-danger" data-dismiss="modal" th:onclick="'deleteFile()'">删除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal small fade" id="deleteBatchFileModal" tabindex="-1" role="dialog" aria-labelledby="deleteBatchFileModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:35%; margin-top: 15%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h2 id="deleteBatchFileModalLabel">删除确认</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-text"><i class="fa fa-warning modal-icon"></i>您确定要删除这些文件吗? 文件删除后不可恢复.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="batchDelete()">删除</button>
                     </div>
                 </div>
             </div>
@@ -135,7 +190,6 @@
         </div>
 
         <div th:replace="fragment/footer :: footer">footer</div>
-
     </div>
 
     <!--必须要在content里面-->

@@ -6,6 +6,7 @@ import com.baoli.util.BaoLiBeanUtil;
 import com.baoli.util.FastDFSClientWrapper;
 import com.baoli.util.ImageCheck;
 import com.baoli.vo.UploadFileInfoVO;
+import com.github.pagehelper.PageInfo;
 import com.github.tobato.fastdfs.domain.StorePath;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,10 +29,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class FileUploadController {
@@ -49,9 +47,31 @@ public class FileUploadController {
     }
 
     @RequestMapping("/uploadFileList")
-    public String getUploadFileList(ModelMap modelMap) {
-        List<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList();
-        modelMap.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(uploadFileList));
+    public String getUploadFileList(Model model,
+                                    @RequestParam(required = false) String fileName, @RequestParam(required = false) String createUser,
+                                    @RequestParam(required = false) Double fileSizeStart, @RequestParam(required = false) Double fileSizeEnd,
+                                    @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
+        PageInfo<UploadFileInfo> pageInfo = uploadFileInfoService.getUploadFileList(fileName, createUser, fileSizeStart, fileSizeEnd, pageNum, pageSize);
+        model.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(pageInfo.getList()));
+        //获得当前页
+        model.addAttribute("pageNum", pageInfo.getPageNum());
+        //获得一页显示的条数
+        model.addAttribute("pageSize", pageInfo.getPageSize());
+        //是否是第一页
+        model.addAttribute("isFirstPage", pageInfo.isIsFirstPage());
+        //获得总页数
+        model.addAttribute("totalPages", pageInfo.getPages());
+        //是否是最后一页
+        model.addAttribute("isLastPage", pageInfo.isIsLastPage());
+        //获得总条数
+        model.addAttribute("totalElements", pageInfo.getTotal());
+
+        //回显搜索项
+        model.addAttribute("fileName", fileName);
+        model.addAttribute("createUser", createUser);
+        model.addAttribute("fileSizeStart", fileSizeStart);
+        model.addAttribute("fileSizeEnd", fileSizeEnd);
+
         return "upload_file/upload_file_List";
     }
 
@@ -99,6 +119,17 @@ public class FileUploadController {
     public String deleteFile(@RequestParam Integer id, @RequestParam String filePath) {
         dfsClient.deleteFile(filePath);
         uploadFileInfoService.deleteFile(id);
+        return "redirect:/uploadFileList";
+    }
+
+    @RequestMapping("/deleteFiles")
+    public String deleteFiles(@RequestParam Integer[] ids, @RequestParam String[] filePaths) {
+        if (ArrayUtils.isNotEmpty(ids) && ArrayUtils.isNotEmpty(filePaths)) {
+            for (int i=0; i< ids.length; i++) {
+                dfsClient.deleteFile(filePaths[i]);
+                uploadFileInfoService.deleteFile(ids[i]);
+            }
+        }
         return "redirect:/uploadFileList";
     }
 
