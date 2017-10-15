@@ -3,9 +3,13 @@ package com.baoli.service.impl;
 import com.baoli.mapper.UploadFileInfoMapper;
 import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,7 @@ import java.util.Map;
 
 @Service
 public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
+    private static final Logger logger = LoggerFactory.getLogger(UploadFileInfoServiceImpl.class);
 
     @Autowired
     private UploadFileInfoMapper mapper;
@@ -32,6 +37,8 @@ public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
 
     @Override
     public PageInfo<UploadFileInfo> getUploadFileList(String fileName, String createUser, Double fileSizeStart, Double fileSizeEnd, Integer pageNum, Integer pageSize) {
+        logger.info(String.format("Retrieve UploadFileInfo by [fileName = %s, createUser = %s, fileSizeStart = %s, fileSizeEnd = %s," +
+                " pageNum = %s, pageSize = %s]", fileName, createUser, fileSizeStart, fileSizeEnd, pageNum, pageSize));
         PageHelper.startPage(pageNum, pageSize);
 
         Map<String, Object> params = new HashedMap();
@@ -40,7 +47,11 @@ public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
         params.put("fileSizeStart", fileSizeStart);
         params.put("fileSizeEnd", fileSizeEnd);
         List<UploadFileInfo> fileInfoLists = mapper.getUploadFileList(params);
-
+        try {
+            logger.info(String.format("UploadFileInfo list is: %s", new ObjectMapper().writeValueAsString(fileInfoLists)));
+        } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
+        }
         return new PageInfo<>(fileInfoLists);
     }
 
