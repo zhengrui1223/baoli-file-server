@@ -1,6 +1,5 @@
 package com.baoli.configuration;
 
-import com.baoli.filter.SecurityFilter;
 import com.baoli.util.CustomMultipartResolver;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -10,9 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /************************************************************
  * @author jerry.zheng
@@ -22,12 +25,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements EmbeddedServletContainerCustomizer{
+
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(new SecurityFilter());
+        DelegatingFilterProxy httpBasicFilter = new DelegatingFilterProxy();
+        registration.setFilter(httpBasicFilter);
+
+        Map<String,String> m = new HashMap<>();
+        m.put("targetBeanName","securityFilter");
+        m.put("targetFilterLifecycle","true");
+        registration.setInitParameters(m);
+
         registration.addUrlPatterns("/*");
-        registration.setName("securityFilter");
         registration.setOrder(1);
         return registration;
     }

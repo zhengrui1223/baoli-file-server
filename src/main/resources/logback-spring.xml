@@ -9,7 +9,8 @@
     </appender>
 
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/${LOG_FILE}</file>
+        <!-- 如果配置中不存在, 给出默认的 -->
+        <file>${LOG_PATH:-/usr/local/tomcat/logs/}/${LOG_FILE:-baoli.log}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
@@ -29,10 +30,17 @@
         </root>
     </springProfile>
 
-    <springProfile name="pretest,test,prod">
+    <springProfile name="pretest,test">
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
+            <!--<appender-ref ref="ROLLING"/>-->
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
         <root level="warn">
             <appender-ref ref="STDOUT"/>
-            <appender-ref ref="ROLLING"/>
+            <!--<appender-ref ref="ROLLING"/>-->
         </root>
     </springProfile>
 
