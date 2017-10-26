@@ -49,15 +49,6 @@ public class DataSourceConfiguration {
         return dataSource;
     }
 
-    //在tomcat中配置jndi数据源
-    /*@Bean()
-    @Profile("pretest,test,prod")
-    public DataSource dataSourceByJndi() {
-        JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-        DataSource dataSource = dataSourceLookup.getDataSource(env.getProperty("profile.datasource.jndiName"));
-        return dataSource;
-    }*/
-
     @Bean
     @Profile("pretest,test,prod")
     public TomcatEmbeddedServletContainerFactory tomcatFactory() {
@@ -82,6 +73,15 @@ public class DataSourceConfiguration {
             }
         };
     }
+
+    //在tomcat中配置jndi数据源
+    /*@Bean()
+    @Profile("pretest,test,prod")
+    public DataSource dataSourceByJndi() {
+        JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+        DataSource dataSource = dataSourceLookup.getDataSource(env.getProperty("profile.datasource.jndiName"));
+        return dataSource;
+    }*/
 
     @Bean()
     @Profile("pretest,test,prod")
