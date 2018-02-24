@@ -1,5 +1,6 @@
 package com.baoli.service.impl;
 
+import com.baoli.exception.BLServiceException;
 import com.baoli.mapper.UploadFileInfoMapper;
 import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
@@ -30,13 +31,15 @@ public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
     private UploadFileInfoMapper mapper;
 
     @Override
-    public UploadFileInfo insert(UploadFileInfo uploadFileInfo) {
+    public UploadFileInfo insert(UploadFileInfo uploadFileInfo) throws BLServiceException {
         uploadFileInfo.setId(mapper.insert(uploadFileInfo));
         return uploadFileInfo;
     }
 
     @Override
-    public PageInfo<UploadFileInfo> getUploadFileList(String fileName, String createUser, Double fileSizeStart, Double fileSizeEnd, Integer pageNum, Integer pageSize) {
+    public PageInfo<UploadFileInfo> getUploadFileList(String fileName, String createUser,
+                                                      Double fileSizeStart, Double fileSizeEnd,
+                                                      Integer pageNum, Integer pageSize) throws BLServiceException {
         logger.info(String.format("Retrieve UploadFileInfo by [fileName = %s, createUser = %s, fileSizeStart = %s, fileSizeEnd = %s," +
                 " pageNum = %s, pageSize = %s]", fileName, createUser, fileSizeStart, fileSizeEnd, pageNum, pageSize));
         PageHelper.startPage(pageNum, pageSize);
@@ -56,7 +59,7 @@ public class UploadFileInfoServiceImpl implements IUploadFileInfoService {
     }
 
     @Override
-    public void deleteFile(Integer id) {
+    public void deleteFile(Integer id) throws BLServiceException {
         mapper.delete(id);
     }
 }

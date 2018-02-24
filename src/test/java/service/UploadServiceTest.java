@@ -1,6 +1,7 @@
 package service;
 
 import com.baoli.SpringBootRunApplication;
+import com.baoli.exception.BLServiceException;
 import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +30,7 @@ public class UploadServiceTest {
     private IUploadFileInfoService uploadFileInfoService;
 
     @Test
-    public void testInsert() {
+    public void testInsert() throws BLServiceException {
         UploadFileInfo uploadFileInfo = new UploadFileInfo();
         uploadFileInfo.setFileName("test");
         uploadFileInfo.setFilePath("http://172.19.10.44/group1/M00/00/00/rBMKLFnDO3OAXDzyAABLOgxub-Q914_big.jpg");
@@ -38,13 +39,13 @@ public class UploadServiceTest {
     }
 
     @Test
-    public void testGetAll() throws JsonProcessingException {
+    public void testGetAll() throws JsonProcessingException, BLServiceException {
         PageInfo<UploadFileInfo> uploadFileList = uploadFileInfoService.getUploadFileList(null, null, null, null, 1, 5);
         System.out.println(new ObjectMapper().writeValueAsString(uploadFileList));
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws BLServiceException {
         uploadFileInfoService.deleteFile(1);
     }
 

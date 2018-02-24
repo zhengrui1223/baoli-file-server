@@ -1,5 +1,6 @@
 package com.baoli.controller;
 
+import com.baoli.exception.BLServiceException;
 import com.baoli.model.UploadFileInfo;
 import com.baoli.service.IUploadFileInfoService;
 import com.baoli.util.BaoLiBeanUtil;
@@ -56,7 +57,7 @@ public class FileUploadController extends BaseController<UploadFileInfo>{
     public String getUploadFileList(Model model,
                                     @RequestParam(required = false) String fileName, @RequestParam(required = false) String createUser,
                                     @RequestParam(required = false) Double fileSizeStart, @RequestParam(required = false) Double fileSizeEnd,
-                                    @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
+                                    @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) throws BLServiceException {
         PageInfo<UploadFileInfo> pageInfo = uploadFileInfoService.getUploadFileList(fileName, createUser, fileSizeStart, fileSizeEnd, pageNum, pageSize);
         model.addAttribute("uploadFileList", BaoLiBeanUtil.convertUploadFileInfos2UploadFileInfoVOs(pageInfo.getList()));
         setPageInfo2Model(model, pageInfo);
@@ -73,7 +74,7 @@ public class FileUploadController extends BaseController<UploadFileInfo>{
 
     @ResponseBody
     @RequestMapping(value = "/uploadFiles", method = RequestMethod.POST)
-    public Map<String, List<String>> uploadFiles(@RequestParam("files") CommonsMultipartFile[] files) {
+    public Map<String, List<String>> uploadFiles(@RequestParam("files") CommonsMultipartFile[] files) throws BLServiceException {
         Map<String, List<String>> resultMap = new HashMap<>();
         List<String> successList = new ArrayList<>();
         List<String> failList = new ArrayList<>();
@@ -113,7 +114,7 @@ public class FileUploadController extends BaseController<UploadFileInfo>{
 
     @ResponseBody
     @RequestMapping("/deleteFile")
-    public Map<String, String> deleteFile(@RequestParam Integer id, @RequestParam String filePath) {
+    public Map<String, String> deleteFile(@RequestParam Integer id, @RequestParam String filePath) throws BLServiceException {
         Map<String, String> resultMap = new HashMap<>();
         try{
             dfsClient.deleteFile(filePath);
@@ -128,7 +129,7 @@ public class FileUploadController extends BaseController<UploadFileInfo>{
 
     @ResponseBody
     @RequestMapping("/deleteFiles")
-    public Map<String, String> deleteFiles(@RequestParam Integer[] ids, @RequestParam String[] filePaths) {
+    public Map<String, String> deleteFiles(@RequestParam Integer[] ids, @RequestParam String[] filePaths) throws BLServiceException{
         Map<String, String> resultMap = new HashMap<>();
         try{
             if (ArrayUtils.isNotEmpty(ids) && ArrayUtils.isNotEmpty(filePaths)) {
