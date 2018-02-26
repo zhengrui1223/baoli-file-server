@@ -39,6 +39,9 @@ public class Config {
     @Value("${profile.filter.ignore.url}")
     private String ignoreUrl;
 
+    @Value("${spring.mail.username}")
+    private String mailUserName;
+
     public Integer getFastDfsSoTimeout() {
         return fastDfsSoTimeout;
     }
@@ -73,5 +76,9 @@ public class Config {
 
     public String getIgnoreUrl() {
         return ignoreUrl;
+    }
+
+    public String getMailUserName() {
+        return mailUserName;
     }
 }

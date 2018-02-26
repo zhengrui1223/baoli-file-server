@@ -12,7 +12,15 @@ public class BLServiceException extends BLBaseException {
         super(errorCode, null);
     }
 
+    public BLServiceException(String errorCode, Throwable e) {
+        super(errorCode, null, e);
+    }
+
     public BLServiceException(String errorCode, String errorMsg) {
         super(errorCode, errorMsg);
+    }
+
+    public BLServiceException(String errorCode, String errorMsg, Throwable e) {
+        super(errorCode, errorMsg, e);
     }
 }
