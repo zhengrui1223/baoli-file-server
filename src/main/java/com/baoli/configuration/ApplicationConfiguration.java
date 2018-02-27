@@ -50,10 +50,24 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements
     }
 
     @Override
-    public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
-        configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND,"/e/404"));
-        configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR,"/e/500"));
-        configurableEmbeddedServletContainer.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST,"/e/400"));
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+
+        //设置系统默认错误页面
+        container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND,"/e/404"));
+        container.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR,"/e/500"));
+        container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST,"/e/400"));
+
+        //设置端口
+        //container.setPort("8080");
+
+        //设置项目访问路径
+        //container.setContextPath("/baoli");
+
+        //设置session失效时间
+        //container.setSessionTimeout(30);
+
+        //...
+
     }
 
     @Bean(name = "multipartResolver")
