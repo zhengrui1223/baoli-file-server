@@ -41,7 +41,7 @@ public class WebServiceConfig {
     public Endpoint endpoint() {
         EndpointImpl endpoint = new EndpointImpl(bus, new TestWebService());
         endpoint.publish("/test");
-        endpoint.getInInterceptors().add(new CXFAuthInterceptor2());
+        endpoint.getInInterceptors().add(new CXFAuthInterceptor2());    //用户认证
         return endpoint;
     }
 
