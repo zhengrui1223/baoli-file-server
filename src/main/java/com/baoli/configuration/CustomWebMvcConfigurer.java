@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  ************************************************************/
 
 @Configuration
-public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
+public class CustomWebMvcConfigurer extends WebMvcConfigurerAdapter {
 
 
     @Override
