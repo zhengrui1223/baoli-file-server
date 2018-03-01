@@ -12,23 +12,8 @@ import javax.xml.bind.annotation.XmlElement;
  * @Date Created in 14:48 2018\2\28 0028        
  ************************************************************/
 
-/**
- *  <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.webservice.baoli.com/">
-         <soapenv:Header>
-            <username>admin</username>
-            <password>pass</password>
-         <soapenv:Header/>
-         <soapenv:Body>
-            <ser:testHello>
-                <message>fewfwefw</message>
-            </ser:testHello>
-         </soapenv:Body>
-    </soapenv:Envelope>
-
-    加入了认证， 需要在header标签中注入用户名密码， 但是如何在http header中认证呢？
- */
 @WebService
-public class TestWebService {
+public class TestWebService2 {
 
     @WebMethod
     public WebServiceCommonResponse testHello(@XmlElement(name = "message", required = true) String message) {

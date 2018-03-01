@@ -31,7 +31,7 @@ public class TestWebService extends BaseClient{
     public void testSoapHeaderAuth() {
         // 创建动态客户端
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-        Client client = dcf.createClient("http://localhost:8080/services/test?wsdl");
+        Client client = dcf.createClient("http://localhost:8080/services/test1?wsdl");
 
         //需要密码的情况需要加上用户名和密码
         client.getOutInterceptors().add(new CXFClientLoginInterceptor(USER_NAME, PASS_WORD));
@@ -62,7 +62,7 @@ public class TestWebService extends BaseClient{
         rootElement.add(body);
 
         Map<String, String> response = HttpClientUtil.webServiceRequest(
-                "http://localhost:8080/services/test",
+                "http://localhost:8080/services/test2",
                 "admin",
                 "pass",
                 document.asXML(), "10");
