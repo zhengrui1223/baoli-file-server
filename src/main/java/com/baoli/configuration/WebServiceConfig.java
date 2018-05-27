@@ -24,7 +24,7 @@ import javax.xml.ws.Endpoint;
 @Configuration
 public class WebServiceConfig {
 
-    @Autowired
+    /*@Autowired
     private Bus bus;
 
     @Bean
@@ -52,6 +52,6 @@ public class WebServiceConfig {
         endpoint.publish("/test2");
         endpoint.getInInterceptors().add(new CXFAuthInterceptor2());    //用户认证, http header
         return endpoint;
-    }
+    }*/
 
 }
