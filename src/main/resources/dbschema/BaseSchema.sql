@@ -19,3 +19,15 @@ CREATE TABLE `upload_file_info` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------
+-- Table structure for upload_file_info
+-- ----------------------------
+DROP TABLE IF EXISTS `stock`;
+CREATE TABLE `stock` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`goods_name` varchar(50) DEFAULT NULL,
+	`goods_count` int(11) DEFAULT NULL,
+	`version` int(11) DEFAULT 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
