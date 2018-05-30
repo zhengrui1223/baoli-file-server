@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -25,7 +26,7 @@ public class RedisCacheManager {
     private static final Logger logger = LoggerFactory.getLogger(RedisCacheManager.class);
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate redisTemplate;
 
     /**
      * 指定缓存失效时间
@@ -155,7 +156,7 @@ public class RedisCacheManager {
      * @param value 值
      * @return true成功 false失败
      */
-    public Boolean set(String key, Object value) {
+    public Boolean set(String key, String value) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForValue().set(key, value);
@@ -180,7 +181,7 @@ public class RedisCacheManager {
      * @param expireTime  时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
-    public Boolean set(String key, Object value, long expireTime) {
+    public Boolean set(String key, String value, long expireTime) {
         Long start = System.currentTimeMillis();
         try {
             if (expireTime > 0) {
@@ -555,7 +556,7 @@ public class RedisCacheManager {
      * @param values 值 可以是多个
      * @return 成功个数
      */
-    public Long sadd(String key, Object... values) {
+    public Long sadd(String key, String... values) {
         Long start = System.currentTimeMillis();
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
@@ -580,7 +581,7 @@ public class RedisCacheManager {
      * @param values 值 可以是多个
      * @return 成功个数
      */
-    public Long sadd(String key, long expireTime, Object... values) {
+    public Long sadd(String key, long expireTime, String... values) {
         Long start = System.currentTimeMillis();
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
@@ -726,7 +727,7 @@ public class RedisCacheManager {
      * @param value 值
      * @return
      */
-    public Boolean lset(String key, Object value) {
+    public Boolean lset(String key, String value) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForList().rightPush(key, value);
@@ -751,7 +752,7 @@ public class RedisCacheManager {
      * @param expireTime  时间(秒)
      * @return
      */
-    public Boolean lset(String key, Object value, long expireTime) {
+    public Boolean lset(String key, String value, long expireTime) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForList().rightPush(key, value);
@@ -778,7 +779,7 @@ public class RedisCacheManager {
      * @param value 值
      * @return
      */
-    public boolean lset(String key, List<Object> value) {
+    public boolean lset(String key, List<String> value) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
@@ -803,7 +804,7 @@ public class RedisCacheManager {
      * @param expireTime  时间(秒)
      * @return
      */
-    public Boolean lset(String key, List<Object> value, long expireTime) {
+    public Boolean lset(String key, List<String> value, long expireTime) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
@@ -830,7 +831,7 @@ public class RedisCacheManager {
      * @param value 值
      * @return
      */
-    public Boolean lset(String key, long index, Object value) {
+    public Boolean lset(String key, long index, String value) {
         Long start = System.currentTimeMillis();
         try {
             redisTemplate.opsForList().set(key, index, value);
@@ -855,7 +856,7 @@ public class RedisCacheManager {
      * @param value 值
      * @return 移除的个数
      */
-    public Long lremove(String key, long count, Object value) {
+    public Long lremove(String key, long count, String value) {
         Long start = System.currentTimeMillis();
         try {
             Long remove = redisTemplate.opsForList().remove(key, count, value);

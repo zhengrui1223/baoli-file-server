@@ -10,4 +10,7 @@ public class Context {
     public static final String RESPONSE_STATUS_CODE = "statusCode";
     public static final String RESPONSE_BODY = "responseBody";
     public static final String RESPONSE_EXCEPTION_TYPE = "exception";
+
+    //stock
+    public static final String GOODS_NAME = "xiao mi 8";
 }

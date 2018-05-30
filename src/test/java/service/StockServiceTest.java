@@ -1,8 +1,10 @@
 package service;
 
 import com.baoli.SpringBootRunApplication;
+import com.baoli.component.redis.RedisCacheManager;
 import com.baoli.model.StockEntity;
 import com.baoli.service.StockService;
+import com.baoli.util.Context;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +27,7 @@ public class StockServiceTest {
     @Autowired
     private StockService stockService;
 
-    private static final int REQUEST_COUNT = 5000;
+    private static final int REQUEST_COUNT = 1000;
 
     private static final String GOODS_NAME = "xiao mi 8";
 
@@ -37,6 +39,9 @@ public class StockServiceTest {
 
     private CountDownLatch downLatch2 = new CountDownLatch(REQUEST_COUNT);
 
+    @Autowired
+    private RedisCacheManager redisCacheManager;
+
     @Before
     public void init() {
         StockEntity entity = new StockEntity();
@@ -45,6 +50,8 @@ public class StockServiceTest {
         entity.setGoodsName(GOODS_NAME);
         entity.setGoodsCount(GOODS_COUNT);
         stockService.update(entity);
+
+        redisCacheManager.set(Context.GOODS_NAME, String.valueOf(GOODS_COUNT));
     }
 
     @Test
@@ -82,7 +89,8 @@ public class StockServiceTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            stockService.secKillWay1(goodsName, buyCount);
+            //stockService.secKillByDBWay1(goodsName, buyCount);
+            stockService.secKillByRedis(goodsName, buyCount);
 
             downLatch2.countDown();
         }

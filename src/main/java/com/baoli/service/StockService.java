@@ -13,5 +13,7 @@ public interface StockService {
 
     StockEntity getByGoodsName(String goodsName);
 
-    Boolean secKillWay1(String goodsName, Integer buyCount);
+    Boolean secKillByDBWay1(String goodsName, Integer buyCount);
+
+    Boolean secKillByRedis(String goodsName, Integer buyCount);
 }
