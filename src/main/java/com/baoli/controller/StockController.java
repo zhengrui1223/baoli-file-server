@@ -34,7 +34,7 @@ public class StockController {
     @ResponseBody
     @RequestMapping(value = "/initStock")
     public Object initStock() {
-        redisCacheManager.set(Context.GOODS_NAME, "1000");
+        redisCacheManager.set(Context.GOODS_NAME, "20");
         return redisCacheManager.get(Context.GOODS_NAME);
     }
 

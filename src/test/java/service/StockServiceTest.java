@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StopWatch;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /************************************************************
  * @Description:
@@ -27,17 +29,19 @@ public class StockServiceTest {
     @Autowired
     private StockService stockService;
 
-    private static final int REQUEST_COUNT = 1000;
+    private static final int REQUEST_COUNT = 700;
 
     private static final String GOODS_NAME = "xiao mi 8";
 
-    private static final Integer GOODS_COUNT = 200;
+    private static final Integer GOODS_COUNT = 20;
 
     private static final Integer BUY_COUNT = 1;
 
     private CountDownLatch downLatch = new CountDownLatch(REQUEST_COUNT);
 
     private CountDownLatch downLatch2 = new CountDownLatch(REQUEST_COUNT);
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(REQUEST_COUNT);
 
     @Autowired
     private RedisCacheManager redisCacheManager;
@@ -60,8 +64,13 @@ public class StockServiceTest {
         StopWatch watch = new StopWatch();
         watch.start();
 
-        for (int i = 0; i < REQUEST_COUNT; i++) {
+        /*for (int i = 0; i < REQUEST_COUNT; i++) {
             new Thread(new UserRequest(GOODS_NAME, BUY_COUNT)).start();
+            downLatch.countDown();
+        }*/
+
+        for (int i = 0; i < REQUEST_COUNT; i++) {
+            executorService.execute(new UserRequest(GOODS_NAME, BUY_COUNT));
             downLatch.countDown();
         }
 
