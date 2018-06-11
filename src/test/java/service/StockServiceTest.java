@@ -5,6 +5,7 @@ import com.baoli.component.redis.RedisCacheManager;
 import com.baoli.model.StockEntity;
 import com.baoli.service.StockService;
 import com.baoli.util.Context;
+import com.baoli.util.RedisUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StopWatch;
+import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -29,11 +31,11 @@ public class StockServiceTest {
     @Autowired
     private StockService stockService;
 
-    private static final int REQUEST_COUNT = 700;
+    private static final int REQUEST_COUNT = 1000;
 
     private static final String GOODS_NAME = "xiao mi 8";
 
-    private static final Integer GOODS_COUNT = 20;
+    private static final Integer GOODS_COUNT = 50;
 
     private static final Integer BUY_COUNT = 1;
 
@@ -56,6 +58,9 @@ public class StockServiceTest {
         stockService.update(entity);
 
         redisCacheManager.set(Context.GOODS_NAME, String.valueOf(GOODS_COUNT));
+
+        Jedis jedis = RedisUtil.getInstance().getJedis();
+        jedis.set(Context.GOODS_NAME, String.valueOf(GOODS_COUNT));
     }
 
     @Test
@@ -99,7 +104,8 @@ public class StockServiceTest {
                 e.printStackTrace();
             }
             //stockService.secKillByDBWay1(goodsName, buyCount);
-            stockService.secKillByRedis(goodsName, buyCount);
+            //stockService.secKillByRedis(goodsName, buyCount);
+            stockService.secKillByRedis2(goodsName, buyCount);
 
             downLatch2.countDown();
         }

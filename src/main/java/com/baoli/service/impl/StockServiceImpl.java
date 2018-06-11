@@ -4,16 +4,15 @@ import com.baoli.mapper.StockMapper;
 import com.baoli.model.StockEntity;
 import com.baoli.service.StockService;
 import com.baoli.util.Context;
-import com.baoli.util.LogExceptionStackTrace;
+import com.baoli.util.RedisUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.util.List;
 import java.util.Random;
@@ -65,36 +64,81 @@ public class StockServiceImpl implements StockService {
     @Override
     public Boolean secKillByRedis(String goodsName, final Integer buyCount) {
 
-        //监听商品数量有无变化
-        redisTemplate.watch(Context.GOODS_NAME);
+        try {
+            //监听商品数量有无变化
+            redisTemplate.watch(Context.GOODS_NAME);
 
-        Object cacheObj = redisTemplate.opsForValue().get(Context.GOODS_NAME);
-        Integer leftAmount = 0;
-        if (cacheObj != null) {
-            leftAmount = Integer.valueOf(String.valueOf(cacheObj));
+            Object cacheObj = redisTemplate.opsForValue().get(Context.GOODS_NAME);
+            Integer leftAmount = 0;
+            if (cacheObj != null) {
+                leftAmount = Integer.valueOf(String.valueOf(cacheObj));
+            }
+
+            if (leftAmount - buyCount < 0) {
+                return false;
+            }
+
+            //开启事物管理
+            redisTemplate.setEnableTransactionSupport(true);
+
+            redisTemplate.multi();
+
+            redisTemplate.opsForValue().increment(Context.GOODS_NAME, -buyCount);
+
+            //提交事物
+            List<Object> exec = redisTemplate.exec();
+
+            if (CollectionUtils.isNotEmpty(exec)) {
+                return true;
+            }
+
+            waitForLock();
+        } finally {
+            redisTemplate.unwatch();
         }
-
-        if (leftAmount - buyCount < 0) {
-            return false;
-        }
-
-        //开启事物管理
-        redisTemplate.setEnableTransactionSupport(true);
-
-        redisTemplate.multi();
-
-        redisTemplate.opsForValue().increment(Context.GOODS_NAME, -buyCount);
-
-        //提交事物
-        List<Object> exec = redisTemplate.exec();
-
-        if (CollectionUtils.isNotEmpty(exec)) {
-            return true;
-        }
-
-        waitForLock();
 
         return secKillByRedis(goodsName, buyCount);
+    }
+
+    @Override
+    public Boolean secKillByRedis2(String goodsName, Integer buyCount) {
+        Jedis jedis = RedisUtil.getInstance().getJedis();
+        try {
+
+            //监听库存有无变化
+            jedis.watch(goodsName);
+
+            String cache = jedis.get(goodsName);
+            Integer leftAmount = 0;
+            if (cache != null) {
+                leftAmount = Integer.valueOf(String.valueOf(cache));
+            }
+
+            if (leftAmount - buyCount < 0) {
+                return false;
+            }
+
+            //开启事物
+            Transaction transaction = jedis.multi();
+
+            //减库存
+            transaction.incrBy(goodsName, -buyCount);
+
+            //获取事物处理是否成功, list不为空即为成功
+            List<Object> exec = transaction.exec();
+
+            if (CollectionUtils.isNotEmpty(exec)) {
+                return true;
+            }
+
+            waitForLock();
+        } finally {
+            //取消监听
+            jedis.unwatch();
+            jedis.close();
+        }
+
+        return secKillByRedis2(goodsName, buyCount);
     }
 
     private void waitForLock() {

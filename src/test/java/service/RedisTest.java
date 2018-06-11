@@ -1,6 +1,9 @@
 package service;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Tuple;
+
+import java.util.*;
 
 /************************************************************
  * @Description:
@@ -11,14 +14,25 @@ import redis.clients.jedis.Jedis;
 public class RedisTest {
 
     public static void main(String[] args) {
-        Jedis jedis = new Jedis("47.98.147.110", 6379);
+        Jedis jedis = new Jedis("127.0.0.1", 6379);
         //权限认证
         jedis.auth("Jiao1223Yu!");
-        System.out.println("连接成功");
-        //设置 redis 字符串数据
-        jedis.set("hello", "world1111111111111111111111111111");
-        // 获取存储的数据并输出
-        System.out.println("redis 存储的字符串为: " + jedis.get("hello"));
+
+
+        Map<String, Double> map = new HashMap<>();
+        map.put("a", 1d);
+        map.put("a1", 1d);
+        map.put("a2", 1d);
+        map.put("b", 2d);
+        map.put("c", 3d);
+        map.put("d", 4d);
+
+        jedis.zadd("testLimit", map);
+
+        Set<String> testLimit = jedis.zrevrangeByScore("testLimit", 4d, 1d, 0, 4);
+        System.out.println(testLimit);
+
+
     }
 
 }
