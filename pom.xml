@@ -148,6 +148,13 @@
             <version>1.6.2.RELEASE</version>
         </dependency>-->
 
+        <!-- 截取视频第一帧 -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>0.8</version>
+        </dependency>
+
     </dependencies>
 
     <build>
